@@ -1,3 +1,9 @@
+:local(.board) {
+  margin-top: 50px;
+  align-self: center;
+  position: relative;
+}
+
 :local(.stenen) {
   position: absolute;
   /*transform: translate(25px, 25px);*/

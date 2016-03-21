@@ -1,6 +1,6 @@
 import React from 'react'
 import {View} from '../components/base'
-import {stenen, zwart_aan_zet, wit_aan_zet, zwart, wit, undetermined} from './Board.css'
+import {board, stenen, zwart_aan_zet, wit_aan_zet, zwart, wit, undetermined} from './Board.css'
 
 import Grid from './Grid'
 
@@ -13,7 +13,7 @@ let colors = {
 let Board = ({value, onMove, turn, color}) => {
   let colorClassName = color === 'black' ? zwart_aan_zet : wit_aan_zet
   return (
-    <View style={{position: 'relative'}} className={turn && colorClassName}>
+    <View className={board + ' ' + (turn ? colorClassName : '')}>
       <Grid width={value.length + 1} height={value.length + 1} />
 
       <View className={stenen}>
