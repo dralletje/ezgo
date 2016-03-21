@@ -1,0 +1,42 @@
+* {
+  box-sizing: border-box;
+}
+
+:local(.View) {
+  display: flex;
+  flex-direction: column;
+}
+
+:local(.stenen) {
+  position: absolute;
+  transform: translate(25px, 25px);
+  flex-direction: column;
+  top: 0;
+  left: 0;
+}
+
+:local(.stenen) div {
+  flex-direction: row;
+}
+
+:local(.stenen) div div {
+  background-color: transparant;
+  margin: 2px;
+  width: 46px;
+  height: 46px;
+
+  border-radius: 25px;
+}
+
+:local(.zwart_aan_zet) :local(.undetermined):hover,
+:local(.zwart) {
+  background-color: black;
+  cursor: pointer;
+}
+
+:local(.wit_aan_zet) :local(.undetermined):hover,
+:local(.wit) {
+  cursor: pointer;
+  background-color: white;
+  border: solid black 1px;
+}
