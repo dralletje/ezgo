@@ -1,5 +1,5 @@
 import React from 'react'
-import {View} from './base'
+import {View} from '../components/base'
 import {stenen, zwart_aan_zet, wit_aan_zet, zwart, wit, undetermined} from './Board.css'
 
 import Grid from './Grid'

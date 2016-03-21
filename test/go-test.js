@@ -2,7 +2,7 @@
 
 let expect = require('chai').expect
 
-let go = require('../source/go')
+let go = require('../source/go/go')
 let emptyBoard = go.emptyBoard
 let applyMove = go.applyMove
 
@@ -11,6 +11,20 @@ let symbols = {
   '●': 1, // Black
   '○': 2, // White
 }
+
+let symbols_ = {
+  '0': '+',
+  '1': '●',
+  '2': '○',
+}
+
+let BoardtoString = board => {
+  return board
+  .map(row => row.map(x => symbols_[x]).join('-'))
+  .map(x => `-${x}-`)
+  .join('\n')
+}
+
 let str2board = str => {
   return str.split('\n')
     .map(line => line.replace(/[^●○+]/g, ''))

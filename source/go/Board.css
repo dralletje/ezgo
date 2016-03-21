@@ -1,15 +1,6 @@
-* {
-  box-sizing: border-box;
-}
-
-:local(.View) {
-  display: flex;
-  flex-direction: column;
-}
-
 :local(.stenen) {
   position: absolute;
-  transform: translate(25px, 25px);
+  /*transform: translate(25px, 25px);*/
   flex-direction: column;
   top: 0;
   left: 0;
@@ -26,6 +17,10 @@
   height: 46px;
 
   border-radius: 25px;
+}
+
+:local(.zwart), :local(.wit) {
+  box-shadow: black 2px 2px;
 }
 
 :local(.zwart_aan_zet) :local(.undetermined):hover,

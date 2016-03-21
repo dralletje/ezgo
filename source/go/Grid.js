@@ -1,5 +1,5 @@
 import React from 'react'
-import {View} from './base'
+import {View} from '../components/base'
 import {range} from 'lodash'
 
 let Grid = ({width, height}) => {
@@ -11,11 +11,12 @@ let Grid = ({width, height}) => {
         borderTopWidth: 1,
         borderLeftWidth: 1,
         borderColor: 'black',
+        transform: 'translate(25px, 25px)',
       }}
     >
-      { range(0, height).map(x =>
+      { range(1, height - 1).map(x =>
         <View key={x} style={{flexDirection: 'row'}}>
-          { range(0, width).map(y =>
+          { range(1, width - 1).map(y =>
             <View
               key={y}
               style={{

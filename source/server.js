@@ -1,6 +1,6 @@
 import SocketIO from 'socket.io'
 
-import {emptyBoard, applyMove} from './go'
+import {emptyBoard, applyMove} from './go/go'
 import {isEqual} from 'lodash'
 
 let io = SocketIO(8080)
@@ -19,18 +19,26 @@ io.on('connection', (socket) => {
     go_games[id] = game
   })
 
-  socket.on('SEND_MOVE', ({move, id}) => {
-    console.log('MoVEEEEeeeee', id)
-    let game = go_games[id]
+  socket.on('SEND_MOVE', ({move, game_id, move_id}) => {
+    let game = go_games[game_id]
 
+    // Not even trying to return an error here
     if (!game) {
-      console.log('Unknown game')
       return
     }
 
+    // Get the next board, hopefully without any error
     let nextBoard = applyMove(game.boards[0], move)
-    if (game.boards.some(b => isEqual(b, nextBoard))) {
-      console.log('Illegal move')
+    let duplicateBoard = game.boards.findIndex(b => isEqual(b, nextBoard))
+    if (duplicateBoard !== -1) {
+      socket.emit('ILLEGAL_MOVE', {
+        move_id,
+        message: (
+          duplicateBoard === 1
+          ? 'That move is suicide!'
+          : 'That move will lead to a situation that existed before.'
+        ),
+      })
       return
     }
 
@@ -39,10 +47,10 @@ io.on('connection', (socket) => {
       turn: game.turn === 'black' ? 'white' : 'black',
       boards: [nextBoard],
     }
-    io.to(id).emit('MOVE', {
-      turn: newGame.turn,
-      move: move,
-    })
-    go_games[id] = newGame
+    socket.broadcast.to(game_id).emit('MOVE', move)
+    socket.emit('ACK_MOVE', { move_id })
+
+    console.log('Updating game', game_id, 'to', newGame)
+    go_games[game_id] = newGame
   })
 })
