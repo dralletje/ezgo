@@ -1,7 +1,6 @@
 import SocketIO from 'socket.io-client'
 import {Observable, Subject} from 'rx'
-
-let SOCKET_ADDRESS = 'http://localhost:8080'
+import {SOCKET_ADDRESS} from './CONFIG'
 
 let GameSocket = (game_id, intialState, moveToState) => {
   // let move_counter = 1
