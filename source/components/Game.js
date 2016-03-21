@@ -11,6 +11,12 @@ import {applyMove} from '../go/go.js'
 import SetupScreen from '../go/SetupScreen'
 import Board from '../go/GoBoard'
 
+import {notificationRequestBar} from './style.css'
+
+import withNotificationPermission from '../hocs/withNotificationPermission'
+
+let decorator = withNotificationPermission
+
 class Game extends React.Component {
   constructor(props, context) {
     super(props, context)
@@ -40,11 +46,16 @@ class Game extends React.Component {
         turn: move.color === 1 ? 'white' : 'black',
         // Prepend the newest board to the history of boards (and limit to 5)
         boards: [newBoard].concat(boards).slice(0, 5),
+        // Show last move more clearly
+        lastMove: move,
       }
     })
 
     // Every new state that comes in, just apply it
     let disposable = socket.state$.subscribe(state => {
+      if (state.turn === this.state.color) {
+        this.props.Notification.create(`You're turn!`)
+      }
       this.setState(state)
     })
 
@@ -58,12 +69,17 @@ class Game extends React.Component {
 
   render() {
     let {boards, turn, color} = this.state
+    let {Notification} = this.props
     let [board] = boards
 
     let handleMove = (x, y) => {
       let myColor = color === 'black' ? 1 : 2
       let move = {x, y, color: myColor}
       this.socket.applyMove(move)
+    }
+
+    let askForNotifications = () => {
+      Notification.requestPermission()
     }
 
     if (!color) {
@@ -87,6 +103,13 @@ class Game extends React.Component {
     return (
       <View>
         <DocumentTitle title={turn === color ? 'YOUR TURN!!!!!' : 'Waiting....'} />
+        { Notification.permission === 'default' &&
+          <View
+            className={notificationRequestBar}
+            onPress={askForNotifications}
+            children="Allow me to notify you when it's your turn!"
+          />
+        }
         <Board
           color={color}
           turn={turn === color}
@@ -98,4 +121,4 @@ class Game extends React.Component {
   }
 }
 
-export default Game
+export default decorator(Game)
