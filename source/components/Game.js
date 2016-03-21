@@ -5,6 +5,8 @@ import {View} from './base'
 
 import GameSocket from '../gameSocket'
 
+import DocumentTitle from 'react-document-title'
+
 import {applyMove} from '../go/go.js'
 import SetupScreen from '../go/SetupScreen'
 import Board from '../go/GoBoard'
@@ -65,20 +67,33 @@ class Game extends React.Component {
     }
 
     if (!color) {
-      return <SetupScreen setState={state => this.setState(state)} />
+      return (
+        <View>
+          <DocumentTitle title="EzGo - super ez go" />
+          <SetupScreen setState={state => this.setState(state)} />
+        </View>
+      )
     }
 
     if (!board) {
-      return <View>Setting up connection with the server...</View>
+      return (
+        <View>
+          <DocumentTitle title="Connecting..." />
+          Setting up connection with the server...
+        </View>
+      )
     }
 
     return (
-      <Board
-        color={color}
-        turn={turn === color}
-        value={board}
-        onMove={handleMove}
-      />
+      <View>
+        <DocumentTitle title={turn === color ? 'YOUR TURN!!!!!' : 'Waiting....'} />
+        <Board
+          color={color}
+          turn={turn === color}
+          value={board}
+          onMove={handleMove}
+        />
+      </View>
     )
   }
 }
