@@ -46,6 +46,7 @@ io.on('connection', (socket) => {
       ...game,
       turn: game.turn === 'black' ? 'white' : 'black',
       boards: [nextBoard],
+      lastMove: move,
     }
     socket.broadcast.to(game_id).emit('MOVE', move)
     socket.emit('ACK_MOVE', { move_id })

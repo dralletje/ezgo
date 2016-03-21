@@ -24,6 +24,7 @@ class Game extends React.Component {
       color: null,
       boards: [],
       turn: null,
+      lastMove: null,
     }
   }
 
@@ -68,7 +69,7 @@ class Game extends React.Component {
   }
 
   render() {
-    let {boards, turn, color} = this.state
+    let {boards, turn, lastMove, color} = this.state
     let {Notification} = this.props
     let [board] = boards
 
@@ -111,6 +112,7 @@ class Game extends React.Component {
           />
         }
         <Board
+          lastMove={lastMove}
           color={color}
           turn={turn === color}
           value={board}

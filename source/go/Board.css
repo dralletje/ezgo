@@ -1,21 +1,26 @@
+/* Just positioning the board itself */
 :local(.board) {
   margin-top: 50px;
   align-self: center;
+  /* So the absolute .stenen will be contained still */
   position: relative;
 }
 
+/* Stone columns, absolute because they hover over the grid */
 :local(.stenen) {
   position: absolute;
-  /*transform: translate(25px, 25px);*/
   flex-direction: column;
   top: 0;
   left: 0;
 }
 
+
+/* Row of stones */
 :local(.stenen) div {
   flex-direction: row;
 }
 
+/* The actual stones. this includes stones that  */
 :local(.stenen) div div {
   background-color: transparant;
   margin: 2px;
@@ -25,6 +30,9 @@
   border-radius: 25px;
 }
 
+/* Selected stones get .zwart or .wit */
+:local(.zwart_aan_zet) :local(.undetermined):hover,
+:local(.wit_aan_zet) :local(.undetermined):hover,
 :local(.zwart), :local(.wit) {
   box-shadow: black 2px 2px;
 }
@@ -32,6 +40,7 @@
 :local(.zwart_aan_zet) :local(.undetermined):hover,
 :local(.zwart) {
   background-color: black;
+  border: 1px solid white;
   cursor: pointer;
 }
 
@@ -40,4 +49,27 @@
   cursor: pointer;
   background-color: white;
   border: solid black 1px;
+}
+
+
+/* Add an extra circle inside the stone that has been moved last */
+:local(.lastmovedstone):before {
+  content: '';
+  display: block;
+  box-sizing: border-box;
+  border: 1px solid white;
+  width: 70%;
+  height: 70%;
+  border-radius: 30px;
+  margin: auto;
+}
+
+:local(.wit):local(.lastmovedstone):before {
+  border-color: black;
+  box-shadow: 1px 1px black;
+}
+
+:local(.zwart):local(.lastmovedstone):before {
+  border-color: white;
+  box-shadow: 1px 1px white;
 }
