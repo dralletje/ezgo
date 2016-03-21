@@ -102,8 +102,6 @@ let applyAttackWave = ({board, color}) => {
       })
     ))
 
-  console.log('defending_groups:', defending_groups)
-
   // Find out which groups are totally taken over!
   let captured_groups =
     defending_groups.filter(stones =>
@@ -122,8 +120,6 @@ let applyAttackWave = ({board, color}) => {
 
   // Now, to get actually rid of the stones taken over on the board,
   let captured_stones = flatten(captured_groups)
-  console.log('captured_groups:', captured_groups)
-  console.log('captured_stones:', captured_stones)
   let nextBoard =
     // we go over every taken stone...
     reduce(captured_stones, board, (board_acc, [x, y]) => (
