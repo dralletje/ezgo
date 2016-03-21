@@ -25,6 +25,7 @@ class Game extends React.Component {
       boards: [],
       turn: null,
       lastMove: null,
+      previewBoard: null,
     }
   }
 
@@ -69,19 +70,10 @@ class Game extends React.Component {
   }
 
   render() {
-    let {boards, turn, lastMove, color} = this.state
+    let {boards, previewBoard, turn, lastMove, color} = this.state
     let {Notification} = this.props
     let [board] = boards
-
-    let handleMove = (x, y) => {
-      let myColor = color === 'black' ? 1 : 2
-      let move = {x, y, color: myColor}
-      this.socket.applyMove(move)
-    }
-
-    let askForNotifications = () => {
-      Notification.requestPermission()
-    }
+    let isMyTurn = turn === color
 
     if (!color) {
       return (
@@ -101,6 +93,35 @@ class Game extends React.Component {
       )
     }
 
+    let handleMove = (x, y) => {
+      if (!isMyTurn) {
+        return
+      }
+
+      let myColor = color === 'black' ? 1 : 2
+      let move = {x, y, color: myColor}
+      this.socket.applyMove(move)
+    }
+
+    let handlePreview = (x, y) => {
+      if (!isMyTurn) {
+        return
+      }
+      let myColor = color === 'black' ? 1 : 2
+      let newBoard = applyMove(board, {x, y, color: myColor})
+      this.setState({previewBoard: newBoard})
+    }
+
+    let handleClearPreview = () => {
+      this.setState({
+        previewBoard: null,
+      })
+    }
+
+    let askForNotifications = () => {
+      Notification.requestPermission()
+    }
+
     return (
       <View>
         <DocumentTitle title={turn === color ? 'YOUR TURN!!!!!' : 'Waiting....'} />
@@ -114,9 +135,13 @@ class Game extends React.Component {
         <Board
           lastMove={lastMove}
           color={color}
-          turn={turn === color}
+          turn={isMyTurn}
           value={board}
+          previewBoard={previewBoard}
+
           onMove={handleMove}
+          onPreview={handlePreview}
+          onClearPreview={handleClearPreview}
         />
       </View>
     )

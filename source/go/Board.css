@@ -28,25 +28,23 @@
   height: 46px;
 
   border-radius: 25px;
+  /*transition: all .1s;*/
 }
 
 /* Selected stones get .zwart or .wit */
-:local(.zwart_aan_zet) :local(.undetermined):hover,
-:local(.wit_aan_zet) :local(.undetermined):hover,
+:local(.preview_zwart), :local(.preview_wit),
 :local(.zwart), :local(.wit) {
   box-shadow: black 2px 2px;
 }
 
-:local(.zwart_aan_zet) :local(.undetermined):hover,
+:local(.preview_zwart),
 :local(.zwart) {
   background-color: black;
   border: 1px solid white;
-  cursor: pointer;
 }
 
-:local(.wit_aan_zet) :local(.undetermined):hover,
+:local(.preview_wit),
 :local(.wit) {
-  cursor: pointer;
   background-color: white;
   border: solid black 1px;
 }
@@ -72,4 +70,11 @@
 :local(.zwart):local(.lastmovedstone):before {
   border-color: white;
   box-shadow: 1px 1px white;
+}
+
+/* Preview stones */
+:local(.preview_zwart),
+:local(.preview_wit) {
+  cursor: pointer;
+  opacity: 0.7;
 }

@@ -6,22 +6,25 @@ import {random} from 'lodash'
 import {
   board, stenen,
   zwart_aan_zet, wit_aan_zet,
-  zwart, wit, undetermined,
-  lastmovedstone,
 } from './Board.css'
 
 import Grid from './Grid'
+import Stone from './Stone'
 
-let colors = {
-  '0': undetermined,
-  '1': zwart,
-  '2': wit,
+let getStone = (b, x, y, defaultStone) => {
+  let row = (b || [])[x]
+  let stone = (row || [])[y]
+
+  return stone === undefined ? defaultStone : stone
 }
 
-let isLastMove = (move, x, y) => move && move.x === x && move.y === y
-
 let noShake = {x: 0, y: 0}
-let Board = withState('shake', 'setShake', noShake, ({shake, setShake, value, onMove, lastMove, turn, color}) => {
+let Board = withState('shake', 'setShake', noShake, ({
+  shake, setShake,
+  value, previewBoard, onMove,
+  onPreview, onClearPreview,
+  lastMove, turn, color,
+}) => {
   let shakeIt = () => {
     setShake({
       x: random(-3, 3, true),
@@ -48,18 +51,17 @@ let Board = withState('shake', 'setShake', noShake, ({shake, setShake, value, on
         { value.map((xs, i) =>
           <View key={i}>
             { xs.map((x, j) =>
-              <View
-                onClick={() => {
-                  if (turn) {
-                    onMove(i, j)
-                    //shakeIt()
-                  }
-                }}
+              <Stone
                 key={j}
-                className={[
-                  colors[x],
-                  isLastMove(lastMove, i, j) && lastmovedstone,
-                ].filter(Boolean).join(' ')}
+                onClick={() => x === 0 && onMove(i, j)}
+                onMouseEnter={() => x === 0 && onPreview(i, j)}
+                onMouseLeave={() => onClearPreview()}
+
+                x={i}
+                y={j}
+                lastMove={lastMove}
+                stone={x}
+                previewStone={getStone(previewBoard, i, j, x)}
               />
             )}
           </View>
