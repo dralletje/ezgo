@@ -1,0 +1,2 @@
+# ezgo
+Easyyyy Goooooo
