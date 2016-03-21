@@ -68,7 +68,7 @@ class Game extends React.Component {
     if (!color) {
       return (
         <View style={{flex: 1}}>
-          <View style={{flex: 1}}>WHiCh ColOUR YoU WanT 2 🐝 ?</View>
+          <View>WHiCh ColOUR YoU WanT 2 🐝 ?</View>
           <View
             style={{
               backgroundColor: 'black',
