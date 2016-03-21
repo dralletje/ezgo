@@ -3,7 +3,7 @@ import {View} from '../components/base'
 
 let SetupScreen = ({setState}) => {
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, textAlign: 'center'}}>
       <View>WHiCh ColOUR YoU WanT 2 🐝 ?</View>
       <View
         style={{
@@ -11,6 +11,7 @@ let SetupScreen = ({setState}) => {
           color: 'white',
           borderRadius: 5,
           padding: 10,
+          marginTop: 20,
         }}
         onPress={() => setState({color: 'black'})}
         children="Black"
@@ -22,6 +23,7 @@ let SetupScreen = ({setState}) => {
           border: 'solid black 1px',
           borderRadius: 5,
           padding: 10,
+          marginTop: 20,
         }}
         onPress={() => setState({color: 'white'})}
         children="White"

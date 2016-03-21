@@ -15,6 +15,8 @@ let colors = {
   '2': wit,
 }
 
+let isLastMove = (move, x, y) => move && move.x === x && move.y === y
+
 let Board = ({value, onMove, lastMove, turn, color}) => {
   let colorClassName = color === 'black' ? zwart_aan_zet : wit_aan_zet
   return (
@@ -30,7 +32,7 @@ let Board = ({value, onMove, lastMove, turn, color}) => {
                 key={j}
                 className={[
                   colors[x],
-                  lastMove.x === i && lastMove.y === j && lastmovedstone,
+                  isLastMove(lastMove, i, j) && lastmovedstone,
                 ].filter(Boolean).join(' ')}
               />
             )}
