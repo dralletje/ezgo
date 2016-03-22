@@ -1,10 +1,16 @@
 :local(.button) {
-  transition: box-shadow .2s, transform .2s, -webkit-filter .2s;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  transition:
+    box-shadow .2s,
+    transform .2s,
+    background-color .2s,
+    border-color .5s,
+    color .5s;
+  box-shadow: none;
   transform: translateY(0);
 
   padding: 5px 20px;
-  color: #eee;
+  color: #333;
+  border: solid 1px #777;
   cursor: pointer;
 
   justify-content: flex-end;
@@ -14,22 +20,22 @@
 }
 
 :local(.button):hover {
-  filter: saturate(150%);
   transform: translateY(-2px);
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 
 :local(.disabled),
 :local(.disabled):hover {
-  /*filter: saturate(40%);*/
-  filter: brightness(60%);
   cursor: default;
-  transform: translateY(2px);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: none;
+  transform: translateY(0);
+  color: #999;
+  border-color: #999;
 }
 
 :local(.button):active {
-  filter: brightness(40%);
-  transform: translateY(3px);
+  transform: translateY(0);
   box-shadow: none;
+  color: #eee;
+  border-color: #eee;
 }

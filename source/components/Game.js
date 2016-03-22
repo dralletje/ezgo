@@ -141,6 +141,7 @@ class Game extends React.Component {
             />
           </Button>
         }
+
         <Board
           lastMove={lastMove}
           color={color}
@@ -157,6 +158,7 @@ class Game extends React.Component {
           turn={turn}
           color={color}
           onPass={handlePass}
+          game={game}
         />
       </View>
     )

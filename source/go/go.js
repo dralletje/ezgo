@@ -1,5 +1,5 @@
 import {range} from 'lodash'
-import {isEqual, flatten} from 'lodash'
+import {isEqual, flatten, groupBy} from 'lodash'
 
 import {Success, Failure} from '../maybe'
 
@@ -23,6 +23,7 @@ export let Colors = {
   NEUTRAL: 0,
   BLACK: 1,
   WHITE: 2,
+  EDGE: 3,
 }
 
 let PROHIBIT_SUICIDE = true
@@ -33,7 +34,10 @@ let updateBoard = (board, {x, y, color}) =>
 
 // Get a stone from the board.
 // Not a big deal, but looked a lot better than the actual code
-let getBoard = (board, x, y) => (board[x] || [])[y]
+let getBoard = (board, x, y) => {
+  let stone = (board[x] || [])[y]
+  return stone === undefined ? Colors.EDGE : stone
+}
 
 // All sides that matter to a stone
 let SIDES = [
@@ -41,24 +45,27 @@ let SIDES = [
   [ 0, -1], [ 0,  1],
 ]
 
-let findGroup = ({x, y, board, used = []}) => {
+let findGroup = ({x, y, board, group = []}) => {
   // Take the base stone, group should be same color
   let stone = getBoard(board, x, y)
 
+  console.log('stone:', stone)
+
   // Check every edge
   // - Add the current stone as an initial value to the group
-  return reduce(SIDES, [[x, y]], (group, [dx, dy]) => {
+  return reduce(SIDES, group.concat([[x, y]]), (acc_group, [dx, dy]) => {
     let _x = x + dx
     let _y = y + dy
 
     // If stone isn't same color, rip
     if (getBoard(board, _x, _y) !== stone) {
-      return group
+      return acc_group
     }
 
     // If it already indexed by another grouper
-    if (contains(used, [_x, _y])) {
-      return group
+    stone === 1 && console.log('used, _x, _y:', acc_group, _x, _y)
+    if (contains(acc_group, [_x, _y])) {
+      return acc_group
     }
 
     // Continue at the stone we just checked
@@ -66,11 +73,43 @@ let findGroup = ({x, y, board, used = []}) => {
       board,
       x: _x,
       y: _y,
-      used: used.concat(group),
+      group: acc_group,
     })
-    // Append the current group to the rest of the chain we find
-    .concat(group)
   })
+}
+
+let collectGroups = (board, stoneSelector) => {
+  // Go over...
+  return reduce(board, [], (groups_accumulator, row, x) => (
+    // ...every stone
+    reduce(row, groups_accumulator, (groups, stone, y) => {
+      if (stoneSelector && !stoneSelector(stone)) {
+        return groups
+      }
+
+      // Check if the position is already 'in a group', if so, don't bother
+      if (groups.some(group => contains(group, [x, y]))) {
+        return groups
+      }
+
+      // Find the group this stone belongs to
+      let group = findGroup({ x, y, board })
+
+      // Move on to the next stone, saving this group from being recrawled
+      return groups.concat([group])
+    })
+  ))
+}
+
+let isSurroundedBy = (group, board, selector) => {
+  let color = getBoard(board, group[0].x, group[0].y)
+  return group.every(([x, y]) =>
+    SIDES
+    .every(([dx, dy]) => {
+      let stone = getBoard(board, x + dx, y + dy)
+      return stone === color || selector(stone, color)
+    })
+  )
 }
 
 let applyAttackWave = ({board, color}) => {
@@ -82,43 +121,13 @@ let applyAttackWave = ({board, color}) => {
 
   // Groups are made by simply checking every stone, crawl as far as you can from every stone,
   // and keeping track of all stones already in a group, so we don't recrawl them.
-  let defending_groups =
-    // Go over...
-    reduce(board, [], (groups_accumulator, row, x) => (
-      // ...every stone
-      reduce(row, groups_accumulator, (groups, stone, y) => {
-        // Again, only care about defending stones
-        if (stone !== defender) {
-          return groups
-        }
-
-        // Check if the position is already 'in a group', if so, don't bother
-        if (groups.some(group => contains(group, [x, y]))) {
-          return groups
-        }
-
-        // Find the group this stone belongs to
-        let group = findGroup({ x, y, board })
-
-        // Move on to the next stone, saving this group from being recrawled
-        return groups.concat([group])
-      })
-    ))
+  let defending_groups = collectGroups(board, stone => stone === defender)
 
   // Find out which groups are totally taken over!
   let captured_groups =
-    defending_groups.filter(stones =>
-      // Check for every stone if it doesn't have...
-      stones.every(([x, y]) =>
-        // ...any side that is not...
-        SIDES.every(([dx, dy]) =>
-          // ...a neutral block.
-          getBoard(board, x + dx, y + dy) !== Colors.NEUTRAL
-          // Because if it doesn't have any...
-        )
-        // ...it only has allies, enemies or walls...
-      )
-      // ...meaning it is taken over 😭
+    defending_groups
+    .filter(group =>
+      isSurroundedBy(group, board, stone => stone !== Colors.NEUTRAL)
     )
 
   // Now, to get actually rid of the stones taken over on the board,
@@ -201,4 +210,27 @@ export let transition = (state, move) => {
       }
     })
   )
+}
+
+let getFieldsCapturedBy = (groupedByColor, board, color) => {
+  let capturedGroups = groupedByColor[0].filter(
+    group => isSurroundedBy(group, board, stone => stone === color)
+  )
+  return flatten(capturedGroups).length + flatten(groupedByColor[color]).length
+}
+
+export let score = ({boards}) => {
+  let [board] = boards
+  let groups = collectGroups(board)
+  let groupedByColor = Object.assign({
+    0: [], 1: [], 2: [],
+  }, groupBy(groups, group => getBoard(board, ...group[0])))
+
+  let blackfields = getFieldsCapturedBy(groupedByColor, board, Colors.BLACK)
+  let whitefields = getFieldsCapturedBy(groupedByColor, board, Colors.WHITE)
+
+  return {
+    white: whitefields,
+    black: blackfields,
+  }
 }
