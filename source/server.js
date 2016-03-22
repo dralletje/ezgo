@@ -1,6 +1,6 @@
 import SocketIO from 'socket.io'
 
-import {emptyBoard, applyMove} from './go/go'
+import {emptyBoard, transition} from './go/go'
 import {isEqual} from 'lodash'
 
 let io = SocketIO(8080)
@@ -27,31 +27,20 @@ io.on('connection', (socket) => {
       return
     }
 
-    // Get the next board, hopefully without any error
-    let nextBoard = applyMove(game.boards[0], move)
-    let duplicateBoard = game.boards.findIndex(b => isEqual(b, nextBoard))
-    if (duplicateBoard !== -1) {
-      socket.emit('ILLEGAL_MOVE', {
-        move_id,
-        message: (
-          duplicateBoard === 1
-          ? 'That move is suicide!'
-          : 'That move will lead to a situation that existed before.'
-        ),
-      })
-      return
-    }
+    // Apply the transition!
+    let {success, value} = transition(game, move)
 
-    let newGame = {
-      ...game,
-      turn: game.turn === 'black' ? 'white' : 'black',
-      boards: [nextBoard],
-      lastMove: move,
+    // If there was no error
+    if (success) {
+      // Send the move to other players
+      socket.broadcast.to(game_id).emit('MOVE', move)
+      // Let the sender know it can savely submit the move
+      socket.emit('ACK_MOVE', { move_id })
+      // Update the internal state (could be mysql?)
+      go_games[game_id] = value
+    } else {
+      // If there was an error, let the sender know it was incorrect
+      socket.emit('DEC_MOVE', { move_id, reason: value})
     }
-    socket.broadcast.to(game_id).emit('MOVE', move)
-    socket.emit('ACK_MOVE', { move_id })
-
-    console.log('Updating game', game_id, 'to', newGame)
-    go_games[game_id] = newGame
   })
 })

@@ -1,6 +1,8 @@
 import {range} from 'lodash'
 import {isEqual, flatten} from 'lodash'
 
+import {Success, Failure} from '../maybe'
+
 // Reduce with initial state as second argument
 let reduce = (collection, accumulator, reducer) => collection.reduce(reducer, accumulator)
 
@@ -10,7 +12,6 @@ let contains = (haystack, needle) => haystack.some(x => isEqual(x, needle))
 // In an array, replace transform the value on a index using the specified map function
 let mapIndex = (haystack, indexToReplace, mapFn) =>
   haystack.map((oldValue, index) => index === indexToReplace ? mapFn(oldValue) : oldValue)
-
 
 // Generate an initial board with a gives size
 export let emptyBoard = size => {
@@ -23,6 +24,8 @@ export let Colors = {
   BLACK: 1,
   WHITE: 2,
 }
+
+let PROHIBIT_SUICIDE = true
 
 // Replace a stone on the board with another color
 let updateBoard = (board, {x, y, color}) =>
@@ -130,11 +133,13 @@ let applyAttackWave = ({board, color}) => {
   return nextBoard
 }
 
+// Returns [success, result|error]
 export let applyMove = (board, move) => {
   // A move can only be applied to a now neutral stone
   if (getBoard(board, move.x, move.y) !== Colors.NEUTRAL) {
-    throw new Error('The UI should prevent you from coming here anyway')
+    return Failure('The UI should prevent you from coming here anyway')
   }
+
   // Apply the move to the board, stupidly
   let newBoard = updateBoard(board, move)
   // Remove stones that were captured by this move
@@ -143,5 +148,43 @@ export let applyMove = (board, move) => {
   // and that'll trigger an error later on 😅
   let secondWave = applyAttackWave(({board: firstWave, color: move.color === 1 ? 2 : 1}))
 
-  return secondWave
+  // Prohibit self suicide if turned on
+  if (PROHIBIT_SUICIDE && firstWave !== secondWave) {
+    return Failure('This move results in suicide!')
+  }
+
+  return Success(secondWave)
+}
+
+export let transition = (state, move) => {
+  let [board] = state.boards
+
+  return (
+    // Get the next board, hopefully without any error
+    applyMove(board, move)
+    // Make sure the board is not the same a preceding board
+    .flatMap(nextBoard => {
+      let duplicateBoard = state.boards.findIndex(b => isEqual(b, nextBoard))
+      if (duplicateBoard !== -1) {
+        return Failure(
+          duplicateBoard === 0
+          ? 'That move is suicide!'
+          : 'That move will lead to a situation that existed before.'
+        )
+      }
+      return Success(nextBoard)
+    })
+    // Return the full new state
+    .map(nextBoard => {
+      return {
+        ...state,
+        // Set the turn to whose turn it is now
+        turn: move.color === 1 ? 'white' : 'black',
+        // Prepend the newest board to the history of boards (and limit to 5)
+        boards: [nextBoard].concat(state.boards).slice(0, 5),
+        // Show last move more clearly
+        lastMove: move,
+      }
+    })
+  )
 }

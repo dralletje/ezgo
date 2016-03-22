@@ -2,57 +2,82 @@ import SocketIO from 'socket.io-client'
 import {Observable, Subject} from 'rx'
 import {SOCKET_ADDRESS} from './CONFIG'
 
+let listen = (socket, event, listener) => {
+  socket.on(event, listener)
+  return () => socket.removeEventListener(event, listener)
+}
+
 let GameSocket = (game_id, intialState, moveToState) => {
-  // let move_counter = 1
+  let move_counter = 1
   let gameState = intialState
   let socket = SocketIO(SOCKET_ADDRESS)
 
-  let errors$ = new Subject()
+  let lastError$ = new Subject()
   let ownMoves$ = new Subject()
 
   // Send first message, expecting to get back more info
   socket.emit('JOIN_GAME', game_id)
 
+  let gamesCache = {}
+
   let applyMove = move => {
     // Calculate next state (make sure it's correct)
-    let nextState = moveToState(gameState, move)
+    let {success, value, ...hmmm} = moveToState(gameState, move)
+    if (success) {
+      let move_id = move_counter
 
-    // Optimistically goooooo
-    ownMoves$.onNext(nextState)
-
-    // Send move to the server
-    socket.emit('SEND_MOVE', {
-      game_id,
-      move_id: 1,
-      move: move,
-    })
+      // Increment move counter
+      move_counter = move_counter + 1
+      // Save current move in 'cache'
+      gamesCache[move_id] = gameState
+      // Send move to the server
+      socket.emit('SEND_MOVE', { game_id, move_id, move })
+      // Optimistically goooooo
+      ownMoves$.onNext(value)
+    } else {
+      lastError$.onNext({message: value})
+    }
   }
 
   let movesFromServer$ = Observable.create(observer => {
+    let ACK_listener = listen(socket, 'ACK_MOVE', ({ move_id }) => {
+      console.log(`Yesss, move ${move_id} acknowledged`)
+      gamesCache[move_id] = undefined
+    })
+    let DEC_listener = listen(socket, 'DEC_MOVE', ({ move_id, reason }) => {
+      console.log(`Ajj, move ${move_id} is declined!`)
+      lastError$.onNext({message: reason})
+      ownMoves$.onNext(gamesCache[move_id])
+      gamesCache[move_id] = undefined
+    })
+
     // This will deliver data every time we reconnect
-    let initalDataListener = data => {
+    let initalDataListener = listen(socket, 'GAME_DATA', data => {
       console.log('data:', data)
       observer.onNext(data)
-    }
-    socket.on('GAME_DATA', initalDataListener)
+    })
 
     // On reconnect, ask again for the data
-    let reconnectListener = () => {
+    let reconnectListener = listen(socket, 'reconnect', () => {
       socket.emit('JOIN_GAME', game_id)
-    }
-    socket.on('reconnect', reconnectListener)
+    })
 
     // On move, update local state
-    let moveListener = move => {
-      let nextState = moveToState(gameState, move)
-      observer.onNext(nextState)
-    }
-    socket.on('MOVE', moveListener)
+    let moveListener = listen(socket, 'MOVE', move => {
+      let {success, value} = moveToState(gameState, move)
+      if (success) {
+        observer.onNext(value)
+      } else {
+        console.log('This stuff gets weird...', value)
+      }
+    })
 
     return () => {
-      socket.removeEventListener(initalDataListener)
-      socket.removeEventListener(reconnectListener)
-      socket.removeEventListener(moveListener)
+      initalDataListener()
+      reconnectListener()
+      moveListener()
+      ACK_listener()
+      DEC_listener()
     }
   }).share()
 
@@ -78,7 +103,7 @@ let GameSocket = (game_id, intialState, moveToState) => {
 
   return {
     state$,
-    errors$,
+    lastError$,
     applyMove,
   }
 }
