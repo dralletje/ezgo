@@ -2,15 +2,18 @@ import React from 'react'
 import {View} from '../components/base'
 import {range} from 'lodash'
 
+let GRID_COLOR = 'gray'
+
 let Grid = ({width, height}) => {
   return (
     <View
       style={{
+        position: 'absolute',
         borderStyle: 'solid',
         borderWidth: 0,
         borderTopWidth: 1,
         borderLeftWidth: 1,
-        borderColor: 'black',
+        borderColor: GRID_COLOR,
         transform: 'translate(25px, 25px)',
       }}
     >
@@ -24,7 +27,7 @@ let Grid = ({width, height}) => {
                 borderWidth: 0,
                 borderBottomWidth: 1,
                 borderRightWidth: 1,
-                borderColor: 'black',
+                borderColor: GRID_COLOR,
 
                 width: 50,
                 height: 50,

@@ -1,17 +1,19 @@
 import React from 'react'
 import {isEqual} from 'lodash'
 
-import {View} from './base'
+import {View, Text} from './base'
 
 import GameSocket from '../gameSocket'
 
 import DocumentTitle from 'react-document-title'
 
-import {applyMove} from '../go/go.js'
+import {applyMove, transition} from '../go/go.js'
 import SetupScreen from '../go/SetupScreen'
 import Board from '../go/GoBoard'
+import InfoBar from '../go/InfoBar'
+import Button from '../go/Button'
 
-import {notificationRequestBar} from './style.css'
+import {notificationRequestBar, card} from './style.css'
 
 import withNotificationPermission from '../hocs/withNotificationPermission'
 
@@ -22,58 +24,43 @@ class Game extends React.Component {
     super(props, context)
     this.state = {
       color: null,
-      boards: [],
-      turn: null,
-      lastMove: null,
       previewBoard: null,
+      game: null,
     }
   }
 
   componentDidMount() {
     let {gameid} = this.props
 
-    let socket = GameSocket(gameid, this.state, ({boards}, move) => {
-      // Take first board
-      let [board] = boards
-      // Apply the move to it
-      let newBoard = applyMove(board, move)
-
-      if (boards.some(b => isEqual(b, newBoard))) {
-        alert('WHUT?!')
-        throw new Error(`Noooooo`)
-      }
-
-      return {
-        // Set the turn to whose turn it is now
-        turn: move.color === 1 ? 'white' : 'black',
-        // Prepend the newest board to the history of boards (and limit to 5)
-        boards: [newBoard].concat(boards).slice(0, 5),
-        // Show last move more clearly
-        lastMove: move,
-      }
-    })
+    let socket = GameSocket(gameid, {
+      boards: [],
+      turn: null,
+      lastMove: null,
+    }, transition)
 
     // Every new state that comes in, just apply it
     let disposable = socket.state$.subscribe(state => {
       if (state.turn === this.state.color) {
         this.props.Notification.create(`You're turn!`)
       }
-      this.setState(state)
+      this.setState({game: state})
     })
 
-    this.disposable = disposable
+    let disposableError = socket.lastError$.subscribe(error => {
+      alert(error.message)
+    })
+
+    this.disposables = [disposable, disposableError]
     this.socket = socket
   }
 
   componentWillUnmount() {
-    this.disposable.dispose()
+    this.disposable.forEach(x => x.dispose())
   }
 
   render() {
-    let {boards, previewBoard, turn, lastMove, color} = this.state
+    let {previewBoard, game, color} = this.state
     let {Notification} = this.props
-    let [board] = boards
-    let isMyTurn = turn === color
 
     if (!color) {
       return (
@@ -84,7 +71,7 @@ class Game extends React.Component {
       )
     }
 
-    if (!board) {
+    if (!game) {
       return (
         <View>
           <DocumentTitle title="Connecting..." />
@@ -92,6 +79,10 @@ class Game extends React.Component {
         </View>
       )
     }
+
+    let {boards, turn, lastMove} = game
+    let [board] = boards
+    let isMyTurn = turn === color
 
     let handleMove = (x, y) => {
       if (!isMyTurn) {
@@ -108,8 +99,13 @@ class Game extends React.Component {
         return
       }
       let myColor = color === 'black' ? 1 : 2
-      let newBoard = applyMove(board, {x, y, color: myColor})
-      this.setState({previewBoard: newBoard})
+      let {success, value} = applyMove(board, {x, y, color: myColor})
+
+      if (success) {
+        this.setState({previewBoard: value})
+      } else {
+        console.log('value:', value)
+      }
     }
 
     let handleClearPreview = () => {
@@ -118,19 +114,24 @@ class Game extends React.Component {
       })
     }
 
-    let askForNotifications = () => {
-      Notification.requestPermission()
-    }
-
     return (
-      <View>
+      <View style={{alignItems: 'center', paddingBottom: 100}}>
         <DocumentTitle title={turn === color ? 'YOUR TURN!!!!!' : 'Waiting....'} />
         { Notification.permission === 'default' &&
-          <View
-            className={notificationRequestBar}
-            onPress={askForNotifications}
-            children="Allow me to notify you when it's your turn!"
-          />
+          <Button
+            onPress={() => Notification.requestPermission()}
+            stoneStyle={{backgroundColor: color}}
+            stoneClassName={Button.left}
+            children=""
+          >
+            <Text
+              style={{
+                fontSize: 24,
+                paddingBottom: 15,
+              }}
+              children="Enable Notifications!"
+            />
+          </Button>
         }
         <Board
           lastMove={lastMove}
@@ -143,6 +144,8 @@ class Game extends React.Component {
           onPreview={handlePreview}
           onClearPreview={handleClearPreview}
         />
+
+        <InfoBar turn={turn} color={color} />
       </View>
     )
   }

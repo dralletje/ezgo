@@ -1,32 +1,28 @@
 import React from 'react'
 import {View} from '../components/base'
 
+import {card} from '../components/style.css'
+import {title} from './setupscreen.css'
+
+import Button from './Button'
+
 let SetupScreen = ({setState}) => {
   return (
-    <View style={{flex: 1, textAlign: 'center'}}>
-      <View>WHiCh ColOUR YoU WanT 2 🐝 ?</View>
-      <View
-        style={{
-          backgroundColor: 'black',
-          color: 'white',
-          borderRadius: 5,
-          padding: 10,
-          marginTop: 20,
-        }}
+    <View style={{flex: 1, textAlign: 'center', width: 'auto', margin: 'auto'}}>
+      <View className={title}>WHiCh ColOUR YoU WanT 2 🐝 ?</View>
+
+      <Button
         onPress={() => setState({color: 'black'})}
-        children="Black"
+        stoneStyle={{backgroundColor: 'black'}}
+        stoneClassName={Button.down}
+        children="BLACK"
       />
-      <View
-        style={{
-          backgroundColor: 'white',
-          color: 'black',
-          border: 'solid black 1px',
-          borderRadius: 5,
-          padding: 10,
-          marginTop: 20,
-        }}
+
+      <Button
         onPress={() => setState({color: 'white'})}
-        children="White"
+        stoneStyle={{backgroundColor: 'white'}}
+        stoneClassName={Button.right}
+        children="WHITE"
       />
     </View>
   )

@@ -5,6 +5,7 @@ import {
   zwart, wit, undetermined,
   lastmovedstone,
   preview_zwart, preview_wit,
+  wrong_if_hovered,
 } from './Board.css'
 
 let isLastMove = (move, x, y) => move && move.x === x && move.y === y
@@ -31,6 +32,7 @@ let Stone = ({
       {...props}
       className={[
         colors[stone],
+        previewStone === 0  && wrong_if_hovered,
         previewStone !== stone && changed[previewStone > 0 ? previewStone : stone],
         isLastMove(lastMove, x, y) && lastmovedstone,
       ].filter(Boolean).join(' ')}

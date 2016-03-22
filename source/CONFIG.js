@@ -1,1 +1,1 @@
-export let SOCKET_ADDRESS = 'http://web.dral.eu:1996'
+export let SOCKET_ADDRESS = 'http://localhost:8080'

@@ -11,3 +11,5 @@ export let View = ({className, onPress, ...props}) => {
     />
   )
 }
+
+export let Text = 'span'

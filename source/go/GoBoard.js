@@ -6,6 +6,7 @@ import {random} from 'lodash'
 import {
   board, stenen,
   zwart_aan_zet, wit_aan_zet,
+  not_my_turn,
 } from './Board.css'
 
 import Grid from './Grid'
@@ -38,12 +39,12 @@ let Board = withState('shake', 'setShake', noShake, ({
   let colorClassName = color === 'black' ? zwart_aan_zet : wit_aan_zet
   return (
     <View
-      className={board + ' ' + (turn ? colorClassName : '')}
-      style={{
+      className={board + ' ' + (turn ? colorClassName : not_my_turn)}
+      /*style={{
         transform: 'translate3d(0, 0, 0)',
         marginTop: shake.x,
         marginLeft: shake.y,
-      }}
+      }}*/
     >
       <Grid width={value.length + 1} height={value.length + 1} />
 

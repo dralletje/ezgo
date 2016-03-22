@@ -4,11 +4,16 @@
   align-self: center;
   /* So the absolute .stenen will be contained still */
   position: relative;
+
+  padding: 20px;
+  padding-bottom: 30px;
+  background-color: #eee;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
 /* Stone columns, absolute because they hover over the grid */
 :local(.stenen) {
-  position: absolute;
+  z-index: 10;
   flex-direction: column;
   top: 0;
   left: 0;
@@ -22,59 +27,92 @@
 
 /* The actual stones. this includes stones that  */
 :local(.stenen) div div {
-  background-color: transparant;
-  margin: 2px;
-  width: 46px;
-  height: 46px;
+  position: relative;
+  width: 50px;
+  height: 50px;
 
-  border-radius: 25px;
-  /*transition: all .1s;*/
+  transition: transform .2s ease-in;
+}
+
+:local(.stenen) div div:before {
+  z-index: 100;
+  content: '';
+  display: block;
+  border: 1px solid transparent;
+  padding: 0;
+  margin: auto;
+  transition: all .5s;
+}
+
+:local(.stenen) div div:after {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  right: 4px;
+  content: '';
+  display: block;
+  background-color: transparant;
 }
 
 /* Selected stones get .zwart or .wit */
-:local(.preview_zwart), :local(.preview_wit),
-:local(.zwart), :local(.wit) {
-  box-shadow: black 2px 2px;
+:local(.preview_zwart):after,
+:local(.zwart):after,
+:local(.preview_wit):after,
+:local(.wit):after,
+:local(.wrong_if_hovered):hover:after {
+  transition:
+    transform .2s ease-in,
+    box-shadow .2s ease-in,
+    opacity .2s ease-in;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
-:local(.preview_zwart),
-:local(.zwart) {
+:local(.preview_zwart):after,
+:local(.zwart):after {
   background-color: black;
-  border: 1px solid white;
 }
 
-:local(.preview_wit),
-:local(.wit) {
+:local(.preview_wit):after,
+:local(.wit):after {
   background-color: white;
-  border: solid black 1px;
+  /*border: solid black 1px;*/
 }
 
 
 /* Add an extra circle inside the stone that has been moved last */
 :local(.lastmovedstone):before {
-  content: '';
-  display: block;
-  box-sizing: border-box;
-  border: 1px solid white;
-  width: 70%;
-  height: 70%;
-  border-radius: 30px;
-  margin: auto;
-}
-
-:local(.wit):local(.lastmovedstone):before {
-  border-color: black;
-  box-shadow: 1px 1px black;
-}
-
-:local(.zwart):local(.lastmovedstone):before {
-  border-color: white;
-  box-shadow: 1px 1px white;
+  border-color: gray !important;
+  padding: 10px !important;
 }
 
 /* Preview stones */
+:local(.preview_zwart):after,
+:local(.preview_wit):after {
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+
 :local(.preview_zwart),
 :local(.preview_wit) {
   cursor: pointer;
-  opacity: 0.7;
+  transform: translateY(-5px);
+}
+
+:local(.not_my_turn) :local(.wrong_if_hovered):after {
+  opacity: 0 !important;
+
+}
+
+:local(.wrong_if_hovered):hover:after {
+  background-color: darkred;
+  transition: none;
+}
+
+:local(.preview_zwart):hover,
+:local(.preview_wit):hover,
+:local(.preview_zwart):hover:after,
+:local(.preview_wit):hover:after {
+  /*box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  transform: translateY(0px);*/
+  /*transition: none;*/
 }
