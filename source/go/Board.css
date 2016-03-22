@@ -34,16 +34,6 @@
   transition: transform .2s ease-in;
 }
 
-:local(.stenen) div div:before {
-  z-index: 100;
-  content: '';
-  display: block;
-  border: 1px solid transparent;
-  padding: 0;
-  margin: auto;
-  transition: all .5s;
-}
-
 :local(.stenen) div div:after {
   position: absolute;
   top: 4px;
@@ -53,6 +43,9 @@
   content: '';
   display: block;
   background-color: transparant;
+
+  /* Add a border radius anyway */
+  border-radius: 25px;
 }
 
 /* Selected stones get .zwart or .wit */
@@ -81,9 +74,21 @@
 
 
 /* Add an extra circle inside the stone that has been moved last */
+:local(.stenen) div div:before {
+  z-index: 100;
+  content: '';
+  display: block;
+  border: 1px solid transparent;
+  padding: 0;
+  margin: auto;
+  transition: all .5s;
+
+  border-radius: 2px;
+}
+
 :local(.lastmovedstone):before {
   border-color: gray !important;
-  padding: 10px !important;
+  padding: 7px !important;
 }
 
 /* Preview stones */
