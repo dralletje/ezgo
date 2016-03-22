@@ -1,8 +1,7 @@
 :local(.button) {
   transition:
-    box-shadow .2s,
-    transform .2s,
-    background-color .2s,
+    box-shadow .5s,
+    transform .5s,
     border-color .5s,
     color .5s;
   box-shadow: none;
