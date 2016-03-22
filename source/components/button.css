@@ -30,7 +30,7 @@
   box-shadow: none;
   transform: translateY(0);
   color: #999;
-  border-color: #999;
+  border-color: #bbb;
 }
 
 :local(.button):active {
