@@ -50,6 +50,8 @@
   width: 40px;
   height: 40px;
 
+  border-radius: 25px;
+
   transform: translateY(60px);
   transition: transform .5s ease-out;
 }
