@@ -159,6 +159,20 @@ export let applyMove = (board, move) => {
 export let transition = (state, move) => {
   let [board] = state.boards
 
+  // Make sure someone is not sending a move while it's not his turn
+  let expectedTurn = move.color === 1 ? 'black' : 'white'
+  if (state.turn !== expectedTurn) {
+    return Failure(`I'm sorry, but it's not your turn.`)
+  }
+
+  // move.pass, only turn changes
+  if (move.pass === true) {
+    return Success({
+      ...state,
+      turn: state.turn === 'black' ? 'white' : 'black',
+    })
+  }
+
   return (
     // Get the next board, hopefully without any error
     applyMove(board, move)
@@ -179,7 +193,7 @@ export let transition = (state, move) => {
       return {
         ...state,
         // Set the turn to whose turn it is now
-        turn: move.color === 1 ? 'white' : 'black',
+        turn: state.turn === 'black' ? 'white' : 'black',
         // Prepend the newest board to the history of boards (and limit to 5)
         boards: [nextBoard].concat(state.boards).slice(0, 5),
         // Show last move more clearly

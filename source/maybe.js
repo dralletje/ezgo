@@ -1,5 +1,5 @@
 // MAYBE
-export let Success = value => {
+let Success = value => {
   return {
     success: true,
     value: value,
@@ -16,7 +16,7 @@ export let Success = value => {
   }
 }
 
-export let Failure = message => {
+let Failure = message => {
   let failure = {
     success: false,
     value: message,
@@ -26,3 +26,5 @@ export let Failure = message => {
   }
   return failure
 }
+
+export {Success, Failure}

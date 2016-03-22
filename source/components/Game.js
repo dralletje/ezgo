@@ -94,6 +94,14 @@ class Game extends React.Component {
       this.socket.applyMove(move)
     }
 
+    let handlePass = () => {
+      if (!isMyTurn) {
+        return
+      }
+      let myColor = color === 'black' ? 1 : 2
+      this.socket.applyMove({pass: true, color: myColor})
+    }
+
     let handlePreview = (x, y) => {
       if (!isMyTurn) {
         return
@@ -145,7 +153,11 @@ class Game extends React.Component {
           onClearPreview={handleClearPreview}
         />
 
-        <InfoBar turn={turn} color={color} />
+        <InfoBar
+          turn={turn}
+          color={color}
+          onPass={handlePass}
+        />
       </View>
     )
   }
