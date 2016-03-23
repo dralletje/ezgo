@@ -9,7 +9,7 @@ import {
   not_my_turn,
 } from './Board.css'
 
-import Grid from './Grid'
+import Grid from '../components/Grid'
 import Stone from './Stone'
 
 let getStone = (b, x, y, defaultStone) => {
@@ -46,7 +46,13 @@ let Board = withState('shake', 'setShake', noShake, ({
         marginLeft: shake.y,
       }}*/
     >
-      <Grid width={value.length + 1} height={value.length + 1} />
+      <Grid
+        width={value.length + 1}
+        height={value.length + 1}
+        style={{
+          transform: 'translate(25px, 25px)',
+        }}
+      />
 
       <View className={stenen}>
         { value.map((xs, i) =>

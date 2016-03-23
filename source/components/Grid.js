@@ -4,7 +4,7 @@ import {range} from 'lodash'
 
 let GRID_COLOR = 'gray'
 
-let Grid = ({width, height}) => {
+let Grid = ({width, height, style = {}, ...props}) => {
   return (
     <View
       style={{
@@ -14,8 +14,9 @@ let Grid = ({width, height}) => {
         borderTopWidth: 1,
         borderLeftWidth: 1,
         borderColor: GRID_COLOR,
-        transform: 'translate(25px, 25px)',
+        ...style,
       }}
+      {...props}
     >
       { range(1, height - 1).map(x =>
         <View key={x} style={{flexDirection: 'row'}}>
@@ -39,6 +40,11 @@ let Grid = ({width, height}) => {
       }
     </View>
   )
+}
+
+Grid.PropTypes = {
+  height: React.PropTypes.number.isRequired,
+  width: React.PropTypes.number.isRequired,
 }
 
 export default Grid
