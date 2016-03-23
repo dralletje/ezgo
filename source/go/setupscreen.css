@@ -2,6 +2,9 @@
   font-size: 35px;
   padding: 20px;
   padding-top: 50px;
+
+  color: #eee;
+  text-shadow: 0 14px 28px rgba(0,0,0,0.5), 0 10px 10px rgba(0,0,0,0.5);
 }
 
 :local(.button) {

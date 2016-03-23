@@ -25,10 +25,9 @@ module.exports = {
           plugins: ['transform-runtime'],
         },
       },
-      {
-        test: /\.css$/,
-        loader: 'style!css!autoprefixer-loader',
-      },
+      { test: /\.css$/, loader: 'style!css!autoprefixer-loader' },
+      { test: /\.png$/, loader: 'url-loader?limit=100000' },
+      { test: /\.jpg$/, loader: 'file-loader' }
     ],
   },
 }
