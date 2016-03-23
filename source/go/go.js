@@ -49,8 +49,6 @@ let findGroup = ({x, y, board, group = []}) => {
   // Take the base stone, group should be same color
   let stone = getBoard(board, x, y)
 
-  console.log('stone:', stone)
-
   // Check every edge
   // - Add the current stone as an initial value to the group
   return reduce(SIDES, group.concat([[x, y]]), (acc_group, [dx, dy]) => {
@@ -63,7 +61,6 @@ let findGroup = ({x, y, board, group = []}) => {
     }
 
     // If it already indexed by another grouper
-    stone === 1 && console.log('used, _x, _y:', acc_group, _x, _y)
     if (contains(acc_group, [_x, _y])) {
       return acc_group
     }
@@ -214,8 +211,11 @@ export let transition = (state, move) => {
 
 let getFieldsCapturedBy = (groupedByColor, board, color) => {
   let capturedGroups = groupedByColor[0].filter(
-    group => isSurroundedBy(group, board, stone => stone === color)
+    group => isSurroundedBy(group, board, stone =>
+      stone === color || stone === Colors.NEUTRAL
+    )
   )
+
   return flatten(capturedGroups).length + flatten(groupedByColor[color]).length
 }
 
