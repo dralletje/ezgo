@@ -1,0 +1,47 @@
+:local(.scorefield) {
+  width: 70px;
+  height: 70px;
+  font-weight: 100;
+  margin: 5px;
+  box-shadow: inset 0 10px 20px rgba(0,0,0,0.19), inset 0 6px 6px rgba(0,0,0,0.23);
+
+  position: relative;
+  overflow: hidden;
+}
+
+:local(.scorefield) > div:first-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 70px;
+  height: 70px;
+  padding: 5px;
+  padding-bottom: 20px;
+  justify-content: flex-end;
+  transition: top .7s;
+}
+
+:local(.komi) {
+  padding-top: 20px;
+  position: absolute;
+  top: 70px;
+  left: 0;
+  height: 70px;
+  width: 70px;
+  font-size: 10px;
+  text-align: left;
+  padding-left: 10px;
+
+  transition: top .7s;
+}
+:local(.komi) div {
+  height: 10px;
+}
+
+:local(.scorefield):hover :local(.komi) {
+  top: 0;
+}
+
+:local(.scorefield):hover div:first-child {
+  top: -70px;
+}

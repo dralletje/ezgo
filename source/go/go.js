@@ -216,7 +216,13 @@ let getFieldsCapturedBy = (groupedByColor, board, color) => {
     )
   )
 
-  return flatten(capturedGroups).length + flatten(groupedByColor[color]).length
+  let area = flatten(capturedGroups).length
+  let stones = flatten(groupedByColor[color]).length
+  let komi = color === Colors.WHITE ? 5.5 : 0
+  return {
+    area, stones, komi,
+    total: area + stones + komi,
+  }
 }
 
 export let score = ({boards}) => {

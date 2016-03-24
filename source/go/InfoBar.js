@@ -8,47 +8,46 @@ import Button from '../components/Button'
 import {onlyUpdateForKeys} from 'recompose'
 import {score} from './go'
 
-let scoreStyle = {
-  justifyContent: 'flex-end',
-  width: 70,
-  height: 70,
-  padding: 5,
-  paddingBottom: 20,
-  // fontSize: 14,
-  fontWeight: 100,
-  margin: 5,
-  boxShadow: 'inset 0 10px 20px rgba(0,0,0,0.19), inset 0 6px 6px rgba(0,0,0,0.23)',
-}
+import {komi, scorefield} from './infobar.css'
 
 let InfoBar = onlyUpdateForKeys(['color', 'turn', 'game'], ({color, turn, onPass, game}) => {
   let isMyTurn = color === turn
 
   let scores = score(game)
 
-  let myColor = color === 'black' ? '#333' : 'white'
-  let notMyColor = color === 'black' ? 'white' : '#333'
-
   return (
     <View style={{flexDirection: 'row', height: 100, width: 490, marginTop: 50}}>
       <View className={card} style={{flex: 1, marginRight: 20, flexDirection: 'row', padding: 10, textAlign: 'center'}}>
 
         <View
+          className={scorefield}
           style={{
-            ...scoreStyle,
-            backgroundColor: myColor,
-            color: notMyColor,
+            backgroundColor: '#333',
+            color: 'white',
           }}
-          children={scores[color]}
-        />
+        >
+          <View>{scores.black.total}</View>
+          <View className={komi}>
+            <View children={`${scores.black.stones} placed`} />
+            <View children={`+ ${scores.black.area} area`} />
+            <View style={{textDecoration: 'line-through'}} children="+ 5.5 komi" />
+          </View>
+        </View>
 
         <View
+          className={scorefield}
           style={{
-            ...scoreStyle,
-            backgroundColor: notMyColor,
-            color: myColor,
+            backgroundColor: 'white',
+            color: '#333',
           }}
-          children={scores[color === 'black' ? 'white' : 'black']}
-        />
+        >
+          <View>{scores.white.total}</View>
+          <View className={komi}>
+            <View children={`${scores.white.stones} placed`} />
+            <View children={`+ ${scores.white.area} area`} />
+            <View children="+ 5.5 komi" />
+          </View>
+        </View>
 
         <Button
           style={{
