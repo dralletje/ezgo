@@ -7,13 +7,26 @@
 
   padding: 20px;
   padding-bottom: 30px;
+}
+
+:local(.grid) {
+  z-index: 20;
+}
+
+:local(.board_background) {
+  z-index: 10;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: #eee;
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
 /* Stone columns, absolute because they hover over the grid */
 :local(.stenen) {
-  z-index: 10;
+  z-index: 30;
   flex-direction: column;
   top: 0;
   left: 0;
@@ -120,4 +133,63 @@
   /*box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   transform: translateY(0px);*/
   /*transition: none;*/
+}
+
+/* Sidebar with markers */
+:local(.right_marker),
+:local(.bottom_marker) {
+  background-color: #bbb;
+  position: absolute;
+  /*z-index: -10;*/
+  transition: left .5s, top .5s;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  cursor: pointer;
+}
+:local(.right_marker) {
+  padding: 5px;
+}
+
+:local(.right_marker) div,
+:local(.bottom_marker) div {
+  padding: 7px;
+  color: #888;
+  text-shadow: 0px -1px 1px #ddd;
+  font-size: 30px;
+}
+
+:local(.bottom_marker) div {
+  padding-left: 14px;
+  padding-right: 17px;
+  padding-top: 5px;
+}
+
+:local(.bottom_marker):hover {
+  top: -15px;
+}
+:local(.enable_markers) :local(.bottom_marker) {
+  top: -40px;
+}
+:local(.enable_markers) :local(.bottom_marker):hover {
+  top: -45px;
+}
+:local(.bottom_marker) {
+  height: 50px;
+  width: 450px;
+  top: -10px;
+  flex-direction: row;
+}
+
+:local(.right_marker):hover {
+  left: -20px;
+}
+:local(.enable_markers) :local(.right_marker) {
+  left: -40px;
+}
+:local(.enable_markers) :local(.right_marker):hover {
+  left: -45px;
+}
+:local(.right_marker) {
+  height: 450px;
+  width: 50px;
+  left: -10px;
 }
