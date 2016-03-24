@@ -123,7 +123,7 @@ class Game extends React.Component {
     }
 
     return (
-      <View style={{alignItems: 'center', paddingBottom: 100}}>
+      <View style={{alignItems: 'center', paddingBottom: 100, paddingTop: 50}}>
         <DocumentTitle title={turn === color ? 'YOUR TURN!!!!!' : 'Waiting....'} />
         { Notification.permission === 'default' &&
           <Button
