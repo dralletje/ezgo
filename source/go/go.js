@@ -175,6 +175,7 @@ export let transition = (state, move) => {
   if (move.pass === true) {
     return Success({
       ...state,
+      lastMove: null,
       turn: state.turn === 'black' ? 'white' : 'black',
     })
   }
