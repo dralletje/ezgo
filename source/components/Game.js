@@ -1,9 +1,6 @@
 import React from 'react'
-import {isEqual} from 'lodash'
 
 import {View, Text} from './base'
-
-import GameSocket from '../gameSocket'
 
 import DocumentTitle from 'react-document-title'
 
@@ -13,11 +10,19 @@ import Board from '../go/GoBoard'
 import InfoBar from '../go/InfoBar'
 import Button from '../go/Button'
 
-import {notificationRequestBar, card} from './style.css'
-
+import {compose}from 'recompose'
 import withNotificationPermission from '../hocs/withNotificationPermission'
+import withGameSocket from '../hocs/withGameSocket'
 
-let decorator = withNotificationPermission
+let decorator = compose(
+  withNotificationPermission
+,
+  withGameSocket(props => props.gameid, transition, {
+    boards: [],
+    turn: null,
+    lastMove: null,
+  })
+)
 
 class Game extends React.Component {
   constructor(props, context) {
@@ -25,42 +30,28 @@ class Game extends React.Component {
     this.state = {
       color: null,
       previewBoard: null,
-      game: null,
     }
   }
 
-  componentDidMount() {
-    let {gameid} = this.props
+  componentWillReceiveProps(nextProps) {
+    let prevGame = this.props.game || {turn: null}
+    let nextGame = nextProps.game
+    let prevError = this.props.lastGameError
+    let nextError = nextProps.lastGameError
+    let {color} = this.state
 
-    let socket = GameSocket(gameid, {
-      boards: [],
-      turn: null,
-      lastMove: null,
-    }, transition)
+    if (prevGame.turn !== nextGame.turn && nextGame.turn === color) {
+      this.props.Notification.create(`You're turn!`)
+    }
 
-    // Every new state that comes in, just apply it
-    let disposable = socket.state$.subscribe(state => {
-      if (state.turn === this.state.color) {
-        this.props.Notification.create(`You're turn!`)
-      }
-      this.setState({game: state})
-    })
-
-    let disposableError = socket.lastError$.subscribe(error => {
-      alert(error.message)
-    })
-
-    this.disposables = [disposable, disposableError]
-    this.socket = socket
-  }
-
-  componentWillUnmount() {
-    this.disposable.forEach(x => x.dispose())
+    if (prevError !== nextError) {
+      alert(nextError.message)
+    }
   }
 
   render() {
-    let {previewBoard, game, color} = this.state
-    let {Notification} = this.props
+    let {previewBoard, color} = this.state
+    let {game, Notification, applyMove: applyGameMove} = this.props
 
     if (!color) {
       return (
@@ -91,7 +82,7 @@ class Game extends React.Component {
 
       let myColor = color === 'black' ? 1 : 2
       let move = {x, y, color: myColor}
-      this.socket.applyMove(move)
+      applyGameMove(move)
     }
 
     let handlePass = () => {
@@ -99,7 +90,7 @@ class Game extends React.Component {
         return
       }
       let myColor = color === 'black' ? 1 : 2
-      this.socket.applyMove({pass: true, color: myColor})
+      applyGameMove({pass: true, color: myColor})
     }
 
     let handlePreview = (x, y) => {

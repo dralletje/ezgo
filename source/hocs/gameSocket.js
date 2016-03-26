@@ -1,6 +1,6 @@
 import SocketIO from 'socket.io-client'
 import {Observable, Subject} from 'rx'
-import {SOCKET_ADDRESS} from './CONFIG'
+import {SOCKET_ADDRESS} from '../CONFIG'
 
 let listen = (socket, event, listener) => {
   socket.on(event, listener)
