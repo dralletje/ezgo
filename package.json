@@ -1,51 +1,44 @@
 {
   "name": "ezgo",
   "version": "1.0.0",
-  "description": "",
+  "description": "Easyyyy Goooooo",
   "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "mocha --compilers js:babel-register",
-    "server": "babel-node --presets \"es2015,react,stage-0\" source/server.js",
-    "coverage": "istanbul cover _mocha -x pushId.js -- -R spec --compilers js:babel-register",
-    "build-web": "webpack"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dralletje/ezgo.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dralletje/ezgo/issues"
+  },
+  "homepage": "https://github.com/dralletje/ezgo#readme",
   "dependencies": {
-    "lodash": "^4.6.1",
-    "react": "^0.14.7",
-    "react-document-title": "^2.0.1",
-    "react-dom": "^0.14.7",
-    "recompose": "^0.15.0",
-    "rx": "^4.1.0",
-    "shallowequal": "^0.2.2",
-    "socket.io": "^1.4.5",
-    "socket.io-client": "^1.4.5"
+    "@typescript-eslint/eslint-plugin": "2.x",
+    "@typescript-eslint/parser": "2.x",
+    "babel-eslint": "10.x",
+    "eslint": "6.x",
+    "eslint-plugin-flowtype": "4.x",
+    "eslint-plugin-import": "2.x",
+    "eslint-plugin-jsx-a11y": "6.x",
+    "eslint-plugin-react": "7.x",
+    "eslint-plugin-react-hooks": "2.x"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "prettier": {
+    "trailingComma": "es5"
   },
   "devDependencies": {
-    "babel-cli": "^6.6.5",
-    "autoprefixer-loader": "^3.2.0",
-    "babel-eslint": "^5.0.0",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-runtime": "^6.6.0",
-    "babel-preset-es2015": "^6.6.0",
-    "babel-preset-react": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "babel-register": "^6.7.2",
-    "chai": "^3.5.0",
-    "css-loader": "^0.23.1",
-    "eslint": "^2.2.0",
-    "eslint-plugin-react": "^4.2.3",
-    "mocha": "^2.4.5",
-    "style-loader": "^0.13.0",
-    "webpack": "^1.12.14"
-  },
-  "babels": {
-    "presets": [
-      "es2015",
-      "react",
-      "stage-0"
-    ]
+    "eslint-config-react-app": "^5.2.1",
+    "prettier": "^2.0.2"
   }
 }
